@@ -6,6 +6,8 @@ import { RESET_USERS } from "./game-actions";
 import { SET_ISADMIN } from "./game-actions";
 import { SET_GAME_STARTED } from "./game-actions";
 import { SET_NUMBER_OF_PEOPLE_ANSWERED } from "./game-actions";
+import { SET_SHOW_LEADERBOARD } from "./game-actions";
+import { SET_QUESTION_NUMBER } from "./game-actions";
 
 const INITIAL_STATE = {
   partyId: null,
@@ -14,6 +16,8 @@ const INITIAL_STATE = {
   isAdmin: null,
   started: false,
   numberOfPeopleAnswered: 0,
+  showLeaderboard: false,
+  questionNumber: 0,
 };
 
 export const gameReducer = (state = INITIAL_STATE, action) => {
@@ -57,6 +61,16 @@ export const gameReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         numberOfPeopleAnswered: action.payload,
+      };
+    case SET_SHOW_LEADERBOARD:
+      return {
+        ...state,
+        showLeaderboard: action.payload,
+      };
+    case SET_QUESTION_NUMBER:
+      return {
+        ...state,
+        questionNumber: action.payload,
       };
     default:
       return state;

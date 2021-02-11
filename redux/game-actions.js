@@ -6,6 +6,8 @@ export const RESET_USERS = "RESET_USERS";
 export const SET_ISADMIN = "SET_ISADMIN";
 export const SET_GAME_STARTED = "SET_GAME_STARTED";
 export const SET_NUMBER_OF_PEOPLE_ANSWERED = "SET_NUMBER_OF_PEOPLE_ANSWERED";
+export const SET_SHOW_LEADERBOARD = "SET_SHOW_LEADERBOARD";
+export const SET_QUESTION_NUMBER = "SET_QUESTION_NUMBER";
 
 export const setPartyIdRedux = (id) => ({
   type: SET_PARTYID,
@@ -43,5 +45,15 @@ export const setGameStarted = (started) => ({
 
 export const setNumberOfPeopleAnswered = (value) => ({
   type: SET_NUMBER_OF_PEOPLE_ANSWERED,
+  payload: value,
+});
+
+export const setShowLeaderboard = (value) => ({
+  type: SET_SHOW_LEADERBOARD,
+  payload: value,
+});
+
+export const setQuestionNumber = (value) => ({
+  type: SET_QUESTION_NUMBER,
   payload: value,
 });

@@ -25,7 +25,61 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { setPartyIdRedux, setIsAdmin } from "../../redux/game-actions";
 
-import { createParty, setupJoinedListener } from "../../firebase/firebase";
+import {
+  createParty,
+  setupJoinedListener,
+  addQuestion,
+} from "../../firebase/firebase";
+
+const data = [
+  "Who is most likely to be homeless?",
+  "Who is most likely to play 10 hours of video games in a single day?",
+  "Who is most likely to buy something they do not really need simply because it is cheap?",
+  "Who is most likely to see a crime in progress and refused to help?",
+  "Who is most likely to try to seduce a police officer officer on duty?",
+  "Who is most likely to get a tutu that they will regret later?",
+  "Who is most likely to take money from their parents without them knowing?",
+  "Who is most likely to win the lottery?",
+  "Who is most likely to give all their money to charity?",
+  "Who is most likely to invent something useful?",
+  "Who is most likely to destroy something out of anger?",
+  "Who is most likely to lock the keys in the car?",
+  "Who is most likely to talk openly about their bodily functions?",
+  "Who is most likely to have an unusual fear?",
+  "Who is most likely to become a famous actor/actress?",
+  "Who is most likely to lose their wallet?",
+  "Who is most likely to have a homosexual experience?",
+  "Who is most likely to pee in the shower?",
+  "Who is most likely to sleep on the street?",
+  "Who is most likely to forget important birthdays?",
+  "Who is most likely to be a world traveler?",
+  'Who is most likely to have their last words be "watch this”?',
+  "Who is most likely to sell all their worldly possessions?",
+  "Who is most likely to full around with someone at a party even though their partners there?",
+  "Who is most likely to run from the police officer?",
+  "Who is most likely to be hungry 24/7?",
+  "Who is most likely to trip in public?",
+  "Who is most likely to sneak out of the restaurant without paying?",
+  "Who is most likely to lose their phone?",
+  "Who is most likely to get hit by a car?",
+  "Who is most likely to sneak into a festival without paying?",
+  "Who is most likely to start a forest fire?",
+  "Who is most likely to be the first one to die in a zombie apocalypse?",
+  "Who is most likely to be childhood friends with hitler?",
+  "Who is most likely to ask an overweight woman if she is pregnant?",
+  "Who is most likely to burn down their home for the insurance money?",
+  "Who will have the most divorces by the time they are 80?",
+  "Who would be the best stripper?",
+  "In their lifetime, who is most likely to perform sexual acts for money?",
+  "Who is most likely to have a secret sexual fetish?",
+  "Who is most likely to have a naked picture of themselves on the internet?",
+  "Who has slept with someone in the shortest amount of time after meeting them?",
+  "Who is most likely to get too kinky on a first date hook-up?",
+  "Who masturbates the most to former lovers?",
+  "Who is most likely to secretly run a meth lab?",
+  "Who will be the most difficult old person to be around?",
+  "Who is most likely to join a cult?’,’If we were all in prison, who would rise to prison gang leader?",
+];
 
 const CreatePartyScreen = (props) => {
   const dispatch = useDispatch();

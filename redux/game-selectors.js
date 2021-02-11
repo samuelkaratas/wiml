@@ -12,10 +12,7 @@ export const selectUserId = createSelector(
   (game) => game.userId
 );
 
-export const selectUsers = createSelector(
-  [gameSelector], 
-  (game) => game.users
-);
+export const selectUsers = createSelector([gameSelector], (game) => game.users);
 
 export const selectIsAdmin = createSelector(
   [gameSelector],
@@ -30,4 +27,14 @@ export const selectStarted = createSelector(
 export const selectNumberOfPeopleAnswered = createSelector(
   [gameSelector],
   (game) => game.numberOfPeopleAnswered
+);
+
+export const selectShowLeaderboard = createSelector(
+  [gameSelector],
+  (game) => game.showLeaderboard
+);
+
+export const selectQuestionNumber = createSelector(
+  [gameSelector],
+  (game) => game.questionNumber
 );

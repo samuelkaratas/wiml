@@ -1,4 +1,5 @@
 import * as firebase from "firebase";
+require("firebase/firestore");
 
 import {
   addUser,
@@ -6,6 +7,8 @@ import {
   setGameStarted,
   setNumberOfPeopleAnswered,
   setUserId,
+  setShowLeaderboard,
+  setQuestionNumber,
 } from "../redux/game-actions";
 
 // Optionally import the services that you want to use
@@ -30,6 +33,27 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
+const db = firebase.firestore();
+
+export const addQuestion = (ind, questionText) => {
+  db.collection("questions/")
+    .doc(ind)
+    .set({
+      questionText,
+    })
+    .then((docRef) => {
+      console.log(docRef);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+
+export const getQuestionText = async (qNum) => {
+  const doc1 = await db.collection("questions/").doc(`${qNum}`).get();
+  return(doc1.data());
+};
+
 export const createParty = (partyId, userInfo) => {
   firebase
     .database()
@@ -39,7 +63,8 @@ export const createParty = (partyId, userInfo) => {
       users: userInfo,
       started: false,
       numberOfPeopleAnswered: 0,
-      showLeaderboard: false
+      showLeaderboard: false,
+      questionNumber: 0,
     });
 };
 
@@ -203,23 +228,67 @@ export const resetNumberOfAnswered = (partyId) => {
 export const resetScore = (partyId, userId) => {
   firebase
     .database()
-    .ref("parties/" + partyId + '/users/' + userId)
+    .ref("parties/" + partyId + "/users/" + userId)
     .update({
       score: 0,
     });
 };
 
 //showLeaderboard
-export const setupAnsweredListener = (partyId) => {
+export const setupShowLeaderboardListener = (partyId) => {
   return function (dispatch) {
     firebase
       .database()
-      .ref("parties/" + partyId + "/numberOfPeopleAnswered")
+      .ref("parties/" + partyId + "/showLeaderboard")
       .on(
         "value",
         (snapshot) => {
-          //console.log(snapshot.val())
-          dispatch(setNumberOfPeopleAnswered(snapshot.val()));
+          console.log("in firebase setup" + snapshot.val());
+          dispatch(setShowLeaderboard(snapshot.val()));
+        },
+        function (error) {
+          console.log(error);
+        }
+      );
+  };
+};
+
+export const changeShowLeaderboard = async (partyId) => {
+  const ref = firebase
+    .database()
+    .ref("parties/" + partyId + "/showLeaderboard");
+
+  await ref.transaction(function (current_value) {
+    return !current_value;
+  });
+};
+
+export const detachShowLeaderboardListener = (partyId) => {
+  firebase
+    .database()
+    .ref("parties/" + partyId + "/showLeaderboard")
+    .off();
+};
+
+export const updateQuestionNumber = (partyId) => {
+  const randomNumber = Math.floor(Math.random() * 47);
+  firebase
+    .database()
+    .ref("parties/" + partyId)
+    .update({
+      questionNumber: randomNumber,
+    });
+};
+
+export const setupQuestionNumberListener = (partyId) => {
+  return function (dispatch) {
+    firebase
+      .database()
+      .ref("parties/" + partyId + "/questionNumber")
+      .on(
+        "value",
+        (snapshot) => {
+          dispatch(setQuestionNumber(snapshot.val()));
         },
         function (error) {
           console.log(error);

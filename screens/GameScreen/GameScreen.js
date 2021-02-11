@@ -19,6 +19,7 @@ import {
   setGameStarted,
   resetUsers,
   setNumberOfPeopleAnswered,
+  setShowLeaderboard,
 } from "../../redux/game-actions";
 
 import {
@@ -27,6 +28,8 @@ import {
   selectUserId,
   selectIsAdmin,
   selectNumberOfPeopleAnswered,
+  selectShowLeaderboard,
+  selectQuestionNumber,
 } from "../../redux/game-selectors";
 
 import {
@@ -38,6 +41,12 @@ import {
   updateUsers,
   resetNumberOfAnswered,
   resetScore,
+  setupShowLeaderboardListener,
+  changeShowLeaderboard,
+  detachShowLeaderboardListener,
+  updateQuestionNumber,
+  setupQuestionNumberListener,
+  getQuestionText
 } from "../../firebase/firebase";
 
 const GameScreen = () => {
@@ -48,37 +57,19 @@ const GameScreen = () => {
   const isAdmin = useSelector(selectIsAdmin);
   const partyId = useSelector(selectPartyId);
   const userId = useSelector(selectUserId);
+  const showLeaderboard = useSelector(selectShowLeaderboard);
+  const questionNumber = useSelector(selectQuestionNumber);
 
   const numOfAnswered = useSelector(selectNumberOfPeopleAnswered);
 
-  //console.log(numOfAnswered);
-
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  //const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [highscore, setHighscore] = useState(null);
   const [array, setArray] = useState(null);
+  const [questionText, setQuestionText] = useState(null);
 
   const nextClicked = async () => {
-    if (!showLeaderboard) {
-      updateUsers(partyId)(dispatch).then((returnedArray) => {
-        console.log("users");
-        console.log(returnedArray);
-        if (returnedArray.length) {
-          const filteredArray = returnedArray.filter((val) => val.score !== 0);
-          filteredArray.sort((a, b) => b.score - a.score);
-          //console.log(array)
-          setHighscore(filteredArray[0].score);
-          setArray(filteredArray);
-          setShowLeaderboard(!showLeaderboard);
-        }
-      });
-    } else {
-      if (isAdmin) {
-        resetNumberOfAnswered(partyId);
-      }
-      resetScore(partyId, userId);
-      setHighscore(null);
-      setArray(null);
-      setShowLeaderboard(!showLeaderboard);
+    if (isAdmin) {
+      changeShowLeaderboard(partyId);
     }
   };
 
@@ -90,6 +81,43 @@ const GameScreen = () => {
   };
 
   useEffect(() => {
+    const runFunction = async () => {
+      console.log("questionNumber" + questionNumber);
+      const returnedObject = await getQuestionText(questionNumber);
+      setQuestionText(returnedObject.questionText);
+    }
+
+    runFunction()
+  }, [questionNumber]);
+
+  useEffect(() => {
+    console.log("showLeaderboard" + showLeaderboard);
+    if (showLeaderboard) {
+      updateUsers(partyId)(dispatch).then((returnedArray) => {
+        //console.log("users");
+        //console.log(returnedArray);
+        if (returnedArray.length) {
+          const filteredArray = returnedArray.filter((val) => val.score !== 0);
+          filteredArray.sort((a, b) => b.score - a.score);
+          //console.log(array)
+          setHighscore(filteredArray[0].score);
+          setArray(filteredArray);
+          //setShowLeaderboard(!showLeaderboard);
+        }
+      });
+    } else {
+      if (isAdmin) {
+        resetNumberOfAnswered(partyId);
+        updateQuestionNumber(partyId);
+      }
+      resetScore(partyId, userId);
+      setHighscore(null);
+      setArray(null);
+      //setShowLeaderboard(!showLeaderboard);
+    }
+  }, [showLeaderboard]);
+
+  useEffect(() => {
     if (numOfAnswered === users.length) {
       nextClicked();
     }
@@ -97,6 +125,8 @@ const GameScreen = () => {
 
   useEffect(() => {
     setupAnsweredListener(partyId)(dispatch);
+    setupShowLeaderboardListener(partyId)(dispatch);
+    setupQuestionNumberListener(partyId)(dispatch);
   }, []);
 
   useEffect(() => {
@@ -116,12 +146,14 @@ const GameScreen = () => {
             detachJoinedListener(partyId);
             detachStartedListener(partyId);
             detachAnsweredListener(partyId);
+            detachShowLeaderboardListener(partyId);
             dispatch(setPartyIdRedux(null));
             dispatch(setUserId(0));
             dispatch(setIsAdmin(null));
             dispatch(resetUsers());
             dispatch(setGameStarted(false));
             dispatch(setNumberOfPeopleAnswered(0));
+            dispatch(setShowLeaderboard(false));
             navigation.navigate("Home");
           }}
           style={{ marginRight: 10, alignSelf: "center" }}
@@ -134,7 +166,7 @@ const GameScreen = () => {
 
   return (
     <View style={styles.container}>
-      <QuestionBox question="Who is most likely to be homeless?" />
+      <QuestionBox question= {questionText ? questionText : "Loading..."} />
       {!showLeaderboard ? (
         <UserSelectionList
           data={users}
