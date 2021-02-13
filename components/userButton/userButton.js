@@ -1,14 +1,20 @@
 import React from "react";
 
-import { Image, Text, StyleSheet, Pressable, TouchableOpacity } from "react-native";
+import {
+  View,
+  Image,
+  Text,
+  StyleSheet,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 
-const UserButton = ({ onPress, username }) => {
+const UserButton = ({ onPress, username, imageUrl }) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
-      <Image
-        style={styles.image}
-        source={require("../../assets/user-profile2.webp")}
-      />
+      <View style={styles.imageContainer}>
+        <Image style={styles.image} source={{ uri: imageUrl }} />
+      </View>
       <Text style={styles.username}>{username}</Text>
     </TouchableOpacity>
   );
@@ -24,9 +30,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     margin: 5,
   },
-  image: {
+  imageContainer: {
     width: 60,
     height: 60,
+    borderRadius: 30,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
   username: {
     color: "white",

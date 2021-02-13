@@ -98,7 +98,9 @@ const CreatePartyScreen = (props) => {
   const toggleGTK = () => setIsGTKEnabled((previousState) => !previousState);
 
   const onCreateHandler = () => {
-    createParty(partyId, [{ name: value, isAdmin: true, score: 0 }]);
+    createParty(partyId, [
+      { name: value, imageUrl: image, isAdmin: true, score: 0 },
+    ]);
     setupJoinedListener(partyId)(dispatch);
     dispatch(setPartyIdRedux(partyId));
     dispatch(setIsAdmin(true));
@@ -145,13 +147,16 @@ const CreatePartyScreen = (props) => {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      base64: true,
     });
 
-    console.log(result);
+    //console.log(result);
 
     if (!result.cancelled) {
-      setImage(result.uri);
+      //setImage(result.uri);
+      let base64Img = `data:image/jpg;base64,${result.base64}`;
+
+      cloudinaryUpload(base64Img);
     }
 
     setModalVisible(false);
@@ -162,16 +167,41 @@ const CreatePartyScreen = (props) => {
     if (!hasPermission) {
       return;
     }
-    const image = await ImagePicker.launchCameraAsync({
+    const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [16, 9],
       quality: 0.5,
+      base64: true,
     });
 
-    console.log(image);
+    let base64Img = `data:image/jpg;base64,${result.base64}`;
+    //console.log(image);
 
-    setImage(image.uri);
+    cloudinaryUpload(base64Img);
+    //setImage(image.uri);
     setModalVisible(false);
+  };
+
+  const cloudinaryUpload = (photo) => {
+    let data = {
+      file: photo,
+      upload_preset: "wiml-preset-name",
+    };
+
+    fetch("https://api.cloudinary.com/v1_1/wiml/image/upload", {
+      body: JSON.stringify(data),
+      headers: {
+        "content-type": "application/json",
+      },
+      method: "POST",
+    })
+      .then(async (r) => {
+        let data = await r.json();
+        console.log(data.secure_url);
+        setImage(data.secure_url);
+        return data.secure_url;
+      })
+      .catch((err) => console.log(err));
   };
 
   return (

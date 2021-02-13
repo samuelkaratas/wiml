@@ -15,6 +15,7 @@ const UserSelectionList = ({ data, onPress }) => {
             onPress(item);
           }}
           username={item.name}
+          imageUrl={item.imageUrl}
         />
       )}
       keyExtractor={(item) => item.name}

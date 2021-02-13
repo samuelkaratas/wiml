@@ -11,6 +11,7 @@ const LeaderboardList = ({ array, highscore }) => {
       renderItem={({ item }) => (
         <LeaderboardItem
           username={item.name}
+          imageUrl={item.imageUrl}
           score={item.score}
           isDrinking={item.score === highscore ? true : false}
         />

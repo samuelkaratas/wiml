@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 
 import {
   View,
@@ -102,10 +102,7 @@ const LobbyScreen = () => {
           <View style={styles.flatlistContainer}>
             <View style={styles.imageAndNameContainer}>
               <View style={styles.imageContainer}>
-                <Image
-                  style={styles.image}
-                  source={require("../../assets/user-profile2.webp")}
-                />
+                <Image style={styles.image} source={{ uri: item.imageUrl }} />
               </View>
               <Text style={styles.username}>{item.name}</Text>
             </View>
@@ -167,11 +164,17 @@ const styles = StyleSheet.create({
     width: "60%",
   },
   imageContainer: {
-    marginLeft: 10,
-  },
-  image: {
     width: 50,
     height: 50,
+    marginLeft: 10,
+    borderRadius: 25,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
   flatlistContainer: {
     flexDirection: "row",

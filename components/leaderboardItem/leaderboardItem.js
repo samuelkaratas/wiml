@@ -58,14 +58,11 @@ const RotateView = (props) => {
   );
 };
 
-const LeaderboardItem = ({ username, score, isDrinking }) => {
+const LeaderboardItem = ({ username, score, imageUrl, isDrinking }) => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image
-          style={styles.image}
-          source={require("../../assets/user-profile2.webp")}
-        />
+        <Image style={styles.image} source={{ uri: imageUrl }} />
       </View>
       {isDrinking ? (
         <RotateView>
@@ -89,11 +86,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   imageContainer: {
-    marginLeft: 10,
-  },
-  image: {
     width: 80,
     height: 80,
+    marginLeft: 10,
+    borderRadius: 40,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
   username: {
     color: "white",
