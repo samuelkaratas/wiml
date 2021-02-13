@@ -1,4 +1,4 @@
-import { SET_PARTYID } from "./game-actions";
+import { REMOVE_USER, SET_PARTYID } from "./game-actions";
 import { SET_USERID } from "./game-actions";
 import { ADD_USER } from "./game-actions";
 import { SET_USERS } from "./game-actions";
@@ -36,6 +36,15 @@ export const gameReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         users: [...state.users, action.payload],
+      };
+    case REMOVE_USER:
+      const filteredUsers = state.users.filter(
+        (user) => user.key !== action.payload.key
+      );
+      console.log(filteredUsers)
+      return {
+        ...state,
+        users: filteredUsers,
       };
     case SET_USERS:
       return {

@@ -4,11 +4,15 @@ require("firebase/firestore");
 import {
   addUser,
   setUsers,
+  removeUser,
   setGameStarted,
   setNumberOfPeopleAnswered,
   setUserId,
   setShowLeaderboard,
   setQuestionNumber,
+  setPartyIdRedux,
+  setIsAdmin,
+  resetUsers,
 } from "../redux/game-actions";
 
 // Optionally import the services that you want to use
@@ -51,7 +55,7 @@ export const addQuestion = (ind, questionText) => {
 
 export const getQuestionText = async (qNum) => {
   const doc1 = await db.collection("questions/").doc(`${qNum}`).get();
-  return(doc1.data());
+  return doc1.data();
 };
 
 export const createParty = (partyId, userInfo) => {
@@ -101,6 +105,61 @@ export const setupJoinedListener = (partyId) => {
       }
     );
   };
+};
+
+export const setupSignoutListener = (partyId) => {
+  return function (dispatch, navigation) {
+    const ref = firebase.database().ref("parties/" + partyId + "/users");
+
+    ref.on(
+      "child_removed",
+      (data) => {
+        console.log("child is removed!!");
+        console.log(data.val());
+
+        var item = data.val();
+        item.key = data.key;
+
+        if (item.isAdmin) {
+          detachJoinedListener(partyId);
+          detachStartedListener(partyId);
+          detachAnsweredListener(partyId);
+          detachShowLeaderboardListener(partyId);
+          detachQuestionNumberListener(partyId);
+          dispatch(setPartyIdRedux(null));
+          dispatch(setUserId(0));
+          dispatch(setIsAdmin(null));
+          dispatch(resetUsers());
+          dispatch(setGameStarted(false));
+          dispatch(setNumberOfPeopleAnswered(0));
+          dispatch(setShowLeaderboard(false));
+          dispatch(setQuestionNumber(0));
+          navigation.navigate("Home");
+        } else {
+          dispatch(removeUser(item));
+        }
+      },
+      function (error) {
+        console.log(error);
+      }
+    );
+  };
+};
+
+export const removeUserFromFirebase = (partyId, userId) => {
+  const ref = firebase
+    .database()
+    .ref("parties/" + partyId + "/users/" + userId);
+
+  ref.remove();
+
+  if (userId === 0) {
+    const ref2 = firebase.database().ref("parties/" + partyId);
+
+    setTimeout(function () {
+      ref2.remove();
+    }, 5000);
+  }
 };
 
 export const detachJoinedListener = (partyId) => {
@@ -295,4 +354,11 @@ export const setupQuestionNumberListener = (partyId) => {
         }
       );
   };
+};
+
+export const detachQuestionNumberListener = (partyId) => {
+  firebase
+    .database()
+    .ref("parties/" + partyId + "/questionNumber")
+    .off();
 };

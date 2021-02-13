@@ -1,6 +1,7 @@
 export const SET_PARTYID = "SET_PARTYID";
 export const SET_USERID = "SET_USERID";
 export const ADD_USER = "ADD_USER";
+export const REMOVE_USER = "REMOVE_USER";
 export const SET_USERS = "SET_USERS";
 export const RESET_USERS = "RESET_USERS";
 export const SET_ISADMIN = "SET_ISADMIN";
@@ -21,6 +22,11 @@ export const setUserId = (id) => ({
 
 export const addUser = (user) => ({
   type: ADD_USER,
+  payload: user,
+});
+
+export const removeUser = (user) => ({
+  type: REMOVE_USER,
   payload: user,
 });
 

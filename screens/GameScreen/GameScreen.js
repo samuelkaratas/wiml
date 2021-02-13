@@ -20,6 +20,7 @@ import {
   resetUsers,
   setNumberOfPeopleAnswered,
   setShowLeaderboard,
+  setQuestionNumber,
 } from "../../redux/game-actions";
 
 import {
@@ -36,6 +37,7 @@ import {
   detachJoinedListener,
   detachStartedListener,
   detachAnsweredListener,
+  detachQuestionNumberListener,
   updateNumberOfPeopleAnswered,
   setupAnsweredListener,
   updateUsers,
@@ -46,7 +48,8 @@ import {
   detachShowLeaderboardListener,
   updateQuestionNumber,
   setupQuestionNumberListener,
-  getQuestionText
+  getQuestionText,
+  removeUserFromFirebase
 } from "../../firebase/firebase";
 
 const GameScreen = () => {
@@ -62,7 +65,6 @@ const GameScreen = () => {
 
   const numOfAnswered = useSelector(selectNumberOfPeopleAnswered);
 
-  //const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [highscore, setHighscore] = useState(null);
   const [array, setArray] = useState(null);
   const [questionText, setQuestionText] = useState(null);
@@ -94,15 +96,11 @@ const GameScreen = () => {
     console.log("showLeaderboard" + showLeaderboard);
     if (showLeaderboard) {
       updateUsers(partyId)(dispatch).then((returnedArray) => {
-        //console.log("users");
-        //console.log(returnedArray);
         if (returnedArray.length) {
           const filteredArray = returnedArray.filter((val) => val.score !== 0);
           filteredArray.sort((a, b) => b.score - a.score);
-          //console.log(array)
           setHighscore(filteredArray[0].score);
           setArray(filteredArray);
-          //setShowLeaderboard(!showLeaderboard);
         }
       });
     } else {
@@ -113,7 +111,6 @@ const GameScreen = () => {
       resetScore(partyId, userId);
       setHighscore(null);
       setArray(null);
-      //setShowLeaderboard(!showLeaderboard);
     }
   }, [showLeaderboard]);
 
@@ -147,6 +144,8 @@ const GameScreen = () => {
             detachStartedListener(partyId);
             detachAnsweredListener(partyId);
             detachShowLeaderboardListener(partyId);
+            detachQuestionNumberListener(partyId);
+            removeUserFromFirebase(partyId, userId);
             dispatch(setPartyIdRedux(null));
             dispatch(setUserId(0));
             dispatch(setIsAdmin(null));
@@ -154,6 +153,7 @@ const GameScreen = () => {
             dispatch(setGameStarted(false));
             dispatch(setNumberOfPeopleAnswered(0));
             dispatch(setShowLeaderboard(false));
+            dispatch(setQuestionNumber(0));
             navigation.navigate("Home");
           }}
           style={{ marginRight: 10, alignSelf: "center" }}

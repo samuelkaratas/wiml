@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 
 import {
   View,
@@ -28,9 +28,16 @@ import {
   selectPartyId,
   selectIsAdmin,
   selectStarted,
+  selectUserId,
 } from "../../redux/game-selectors";
 
-import { detachJoinedListener, updateStarted, detachStartedListener } from "../../firebase/firebase";
+import {
+  detachJoinedListener,
+  updateStarted,
+  detachStartedListener,
+  setupSignoutListener,
+  removeUserFromFirebase,
+} from "../../firebase/firebase";
 
 const LobbyScreen = () => {
   const navigation = useNavigation();
@@ -40,15 +47,16 @@ const LobbyScreen = () => {
   const partyId = useSelector(selectPartyId);
   const isAdmin = useSelector(selectIsAdmin);
   const started = useSelector(selectStarted);
+  const userId = useSelector(selectUserId);
 
-  React.useEffect(() => {
-    console.log(users)
+  useEffect(() => {
+    console.log(users);
+    setupSignoutListener(partyId)(dispatch, navigation);
   }, []);
-  
 
-  React.useEffect(() => {
-    console.log(started)
-    if(started) {
+  useEffect(() => {
+    console.log(started);
+    if (started) {
       navigation.navigate("Game");
     }
   }, [started]);
@@ -60,6 +68,7 @@ const LobbyScreen = () => {
           onPress={() => {
             detachJoinedListener(partyId);
             detachStartedListener(partyId);
+            removeUserFromFirebase(partyId, userId);
             dispatch(setPartyIdRedux(null));
             dispatch(setUserId(0));
             dispatch(setIsAdmin(null));
@@ -100,9 +109,15 @@ const LobbyScreen = () => {
               </View>
               <Text style={styles.username}>{item.name}</Text>
             </View>
-            {isAdmin ? <Pressable onPress={() => console.log(`Remove = ${item.name}`)}>
-              <MaterialIcons name="highlight-remove" size={24} color="white" />
-            </Pressable> : null}
+            {isAdmin ? (
+              <Pressable onPress={() => console.log(`Remove = ${item.name}`)}>
+                <MaterialIcons
+                  name="highlight-remove"
+                  size={24}
+                  color="white"
+                />
+              </Pressable>
+            ) : null}
           </View>
         )}
         keyExtractor={(item) => item.name}
