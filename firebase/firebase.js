@@ -13,6 +13,7 @@ import {
   setPartyIdRedux,
   setIsAdmin,
   resetUsers,
+  setCreatingParty,
 } from "../redux/game-actions";
 
 // Optionally import the services that you want to use
@@ -59,17 +60,26 @@ export const getQuestionText = async (qNum) => {
 };
 
 export const createParty = (partyId, userInfo) => {
-  firebase
-    .database()
-    .ref("parties/" + partyId)
-    .set({
-      id: partyId,
-      users: userInfo,
-      started: false,
-      numberOfPeopleAnswered: 0,
-      showLeaderboard: false,
-      questionNumber: 0,
-    });
+  return function (dispatch) {
+    firebase
+      .database()
+      .ref("parties/" + partyId)
+      .set({
+        id: partyId,
+        users: userInfo,
+        started: false,
+        numberOfPeopleAnswered: 0,
+        showLeaderboard: false,
+        questionNumber: 0,
+      })
+      .then((data) => {
+        console.log(data);
+
+        dispatch(setCreatingParty(false));
+      });
+
+    console.log("now");
+  };
 };
 
 export const joinParty = (partyId, userInfo) => {
@@ -361,4 +371,26 @@ export const detachQuestionNumberListener = (partyId) => {
     .database()
     .ref("parties/" + partyId + "/questionNumber")
     .off();
+};
+
+export const checkIfRoomExsist = (partyId) => {
+  return new Promise((resolve, reject) => {
+    firebase
+      .database()
+      .ref(`/parties/${partyId}`)
+      .once(
+        "value",
+        function (snapshot) {
+          if (snapshot.exists()) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        },
+        function (error) {
+          console.log(error);
+          reject(false);
+        }
+      );
+  });
 };

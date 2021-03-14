@@ -23,7 +23,7 @@ import Constants from "expo-constants";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { setPartyIdRedux, setIsAdmin } from "../../redux/game-actions";
+import { setPartyIdRedux, setIsAdmin, setCreatingParty } from "../../redux/game-actions";
 
 import {
   createParty,
@@ -97,10 +97,13 @@ const CreatePartyScreen = (props) => {
   const [isGTKEnabled, setIsGTKEnabled] = useState(false);
   const toggleGTK = () => setIsGTKEnabled((previousState) => !previousState);
 
+  const [loadingPhoto, setLoadingPhoto] = useState(false);
+
   const onCreateHandler = () => {
+    dispatch(setCreatingParty(true));
     createParty(partyId, [
       { name: value, imageUrl: image, isAdmin: true, score: 0 },
-    ]);
+    ])(dispatch);
     setupJoinedListener(partyId)(dispatch);
     dispatch(setPartyIdRedux(partyId));
     dispatch(setIsAdmin(true));
@@ -183,6 +186,7 @@ const CreatePartyScreen = (props) => {
   };
 
   const cloudinaryUpload = (photo) => {
+    setLoadingPhoto(true);
     let data = {
       file: photo,
       upload_preset: "wiml-preset-name",
@@ -199,6 +203,7 @@ const CreatePartyScreen = (props) => {
         let data = await r.json();
         console.log(data.secure_url);
         setImage(data.secure_url);
+        setLoadingPhoto(false);
         return data.secure_url;
       })
       .catch((err) => console.log(err));
@@ -224,7 +229,11 @@ const CreatePartyScreen = (props) => {
 
       <Text style={styles.partyIdText}>Party Id: {partyId}</Text>
 
-      <CustomButton onPress={onCreateHandler}>CREATE</CustomButton>
+      {loadingPhoto ? (
+        <Text>Uploading photo to service...</Text>
+      ) : (
+        <CustomButton onPress={onCreateHandler}>CREATE</CustomButton>
+      )}
 
       <ImageChooserModal
         modalVisible={modalVisible}

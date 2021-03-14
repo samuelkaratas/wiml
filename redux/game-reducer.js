@@ -8,6 +8,7 @@ import { SET_GAME_STARTED } from "./game-actions";
 import { SET_NUMBER_OF_PEOPLE_ANSWERED } from "./game-actions";
 import { SET_SHOW_LEADERBOARD } from "./game-actions";
 import { SET_QUESTION_NUMBER } from "./game-actions";
+import { SET_CREATING_PARTY } from "./game-actions";
 
 const INITIAL_STATE = {
   partyId: null,
@@ -18,6 +19,7 @@ const INITIAL_STATE = {
   numberOfPeopleAnswered: 0,
   showLeaderboard: false,
   questionNumber: 0,
+  creatingParty: false,
 };
 
 export const gameReducer = (state = INITIAL_STATE, action) => {
@@ -41,7 +43,7 @@ export const gameReducer = (state = INITIAL_STATE, action) => {
       const filteredUsers = state.users.filter(
         (user) => user.key !== action.payload.key
       );
-      console.log(filteredUsers)
+      console.log(filteredUsers);
       return {
         ...state,
         users: filteredUsers,
@@ -80,6 +82,11 @@ export const gameReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         questionNumber: action.payload,
+      };
+    case SET_CREATING_PARTY:
+      return {
+        ...state,
+        creatingParty: action.payload,
       };
     default:
       return state;

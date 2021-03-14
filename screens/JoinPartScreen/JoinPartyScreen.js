@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
 import ChooseImage from "../../components/chooseImage/chooseImage";
 
@@ -12,7 +12,11 @@ import * as Permissions from "expo-permissions";
 import Constants from "expo-constants";
 
 import { useNavigation } from "@react-navigation/native";
-import { joinParty, setupJoinedListener } from "../../firebase/firebase";
+import {
+  joinParty,
+  setupJoinedListener,
+  checkIfRoomExsist,
+} from "../../firebase/firebase";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -21,19 +25,31 @@ import { setPartyIdRedux, setIsAdmin } from "../../redux/game-actions";
 const JoinPartScreen = (props) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  
+
   const [name, onNameChange] = useState("");
   const [partyId, onPartyIdChange] = useState("");
 
   const [image, setImage] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const onJoinHandler = () => {
-    joinParty(partyId, { name: name, imageUrl: image, isAdmin: false, score: 0 })(dispatch);
-    setupJoinedListener(partyId)(dispatch);
-    dispatch(setPartyIdRedux(partyId));
-    dispatch(setIsAdmin(false));
-    navigation.navigate("Lobby");
+  const [loadingPhoto, setLoadingPhoto] = useState(false);
+
+  const onJoinHandler = async () => {
+    const exsist = await checkIfRoomExsist(partyId);
+    if (exsist) {
+      joinParty(partyId, {
+        name: name,
+        imageUrl: image,
+        isAdmin: false,
+        score: 0,
+      })(dispatch);
+      setupJoinedListener(partyId)(dispatch);
+      dispatch(setPartyIdRedux(partyId));
+      dispatch(setIsAdmin(false));
+      navigation.navigate("Lobby");
+    } else {
+      alert("Party doesn't exsist");
+    }
   };
 
   useEffect(() => {
@@ -107,6 +123,7 @@ const JoinPartScreen = (props) => {
   };
 
   const cloudinaryUpload = (photo) => {
+    setLoadingPhoto(true);
     let data = {
       file: photo,
       upload_preset: "wiml-preset-name",
@@ -123,6 +140,7 @@ const JoinPartScreen = (props) => {
         let data = await r.json();
         console.log(data.secure_url);
         setImage(data.secure_url);
+        setLoadingPhoto(false);
         return data.secure_url;
       })
       .catch((err) => console.log(err));
@@ -130,7 +148,7 @@ const JoinPartScreen = (props) => {
 
   return (
     <View style={styles.container}>
-    <ChooseImage image={image} onPress={onImagePressed} />
+      <ChooseImage image={image} onPress={onImagePressed} />
 
       <CustomInput
         placeholder="NAME"
@@ -144,7 +162,11 @@ const JoinPartScreen = (props) => {
         onChangeText={(text) => onPartyIdChange(text)}
       />
 
-      <CustomButton onPress={onJoinHandler}>Join</CustomButton>
+      {loadingPhoto ? (
+        <Text>Uploading photo to service...</Text>
+      ) : (
+        <CustomButton onPress={onJoinHandler}>Join</CustomButton>
+      )}
 
       <ImageChooserModal
         modalVisible={modalVisible}

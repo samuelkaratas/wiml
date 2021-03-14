@@ -49,7 +49,7 @@ import {
   updateQuestionNumber,
   setupQuestionNumberListener,
   getQuestionText,
-  removeUserFromFirebase
+  removeUserFromFirebase,
 } from "../../firebase/firebase";
 
 const GameScreen = () => {
@@ -68,6 +68,7 @@ const GameScreen = () => {
   const [highscore, setHighscore] = useState(null);
   const [array, setArray] = useState(null);
   const [questionText, setQuestionText] = useState(null);
+  const [selected, setSelected] = useState(false);
 
   const nextClicked = async () => {
     if (isAdmin) {
@@ -80,44 +81,71 @@ const GameScreen = () => {
 
   const userClicked = (item) => {
     updateNumberOfPeopleAnswered(partyId, item.key);
+    setSelected(true);
   };
 
   useEffect(() => {
+    let unmounted = false;
+
     const runFunction = async () => {
       console.log("questionNumber" + questionNumber);
       const returnedObject = await getQuestionText(questionNumber);
       setQuestionText(returnedObject.questionText);
+    };
+    if (!unmounted) {
+      runFunction();
     }
 
-    runFunction()
+    return () => {
+      unmounted = true;
+    };
   }, [questionNumber]);
 
   useEffect(() => {
-    console.log("showLeaderboard" + showLeaderboard);
-    if (showLeaderboard) {
-      updateUsers(partyId)(dispatch).then((returnedArray) => {
-        if (returnedArray.length) {
-          const filteredArray = returnedArray.filter((val) => val.score !== 0);
-          filteredArray.sort((a, b) => b.score - a.score);
-          setHighscore(filteredArray[0].score);
-          setArray(filteredArray);
+    //console.log("showLeaderboard" + showLeaderboard);
+    let unmounted = false;
+
+    if (!unmounted) {
+      if (showLeaderboard) {
+        updateUsers(partyId)(dispatch).then((returnedArray) => {
+          if (returnedArray.length) {
+            const filteredArray = returnedArray.filter(
+              (val) => val.score !== 0
+            );
+            filteredArray.sort((a, b) => b.score - a.score);
+            setHighscore(filteredArray[0].score);
+            setArray(filteredArray);
+          }
+        });
+      } else {
+        if (isAdmin) {
+          resetNumberOfAnswered(partyId);
+          updateQuestionNumber(partyId);
         }
-      });
-    } else {
-      if (isAdmin) {
-        resetNumberOfAnswered(partyId);
-        updateQuestionNumber(partyId);
+        resetScore(partyId, userId);
+        setHighscore(null);
+        setArray(null);
+        setSelected(false);
       }
-      resetScore(partyId, userId);
-      setHighscore(null);
-      setArray(null);
     }
+
+    return () => {
+      unmounted = true;
+    };
   }, [showLeaderboard]);
 
   useEffect(() => {
-    if (numOfAnswered === users.length) {
-      nextClicked();
+    let unmounted = false;
+
+    if (!unmounted) {
+      if (numOfAnswered === users.length) {
+        nextClicked();
+      }
     }
+    
+    return () => {
+      unmounted = true;
+    };
   }, [numOfAnswered]);
 
   useEffect(() => {
@@ -166,14 +194,18 @@ const GameScreen = () => {
 
   return (
     <View style={styles.container}>
-      <QuestionBox question= {questionText ? questionText : "Loading..."} />
+      <QuestionBox question={questionText ? questionText : "Loading..."} />
       {!showLeaderboard ? (
-        <UserSelectionList
-          data={users}
-          onPress={(clickedUserItem) => {
-            userClicked(clickedUserItem);
-          }}
-        />
+        !selected ? (
+          <UserSelectionList
+            data={users}
+            onPress={(clickedUserItem) => {
+              userClicked(clickedUserItem);
+            }}
+          />
+        ) : (
+          <Text style={styles.text}>Waiting for others...</Text>
+        )
       ) : (
         <LeaderboardList array={array} highscore={highscore} />
       )}

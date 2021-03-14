@@ -29,6 +29,7 @@ import {
   selectIsAdmin,
   selectStarted,
   selectUserId,
+  selectCreatingParty,
 } from "../../redux/game-selectors";
 
 import {
@@ -48,8 +49,10 @@ const LobbyScreen = () => {
   const isAdmin = useSelector(selectIsAdmin);
   const started = useSelector(selectStarted);
   const userId = useSelector(selectUserId);
+  const creatingParty = useSelector(selectCreatingParty);
 
   useEffect(() => {
+    console.log("users");
     console.log(users);
     setupSignoutListener(partyId)(dispatch, navigation);
   }, []);
@@ -91,36 +94,42 @@ const LobbyScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
-        <Text style={styles.questionText}>
-          Your friends can join using the party id: {partyId}
-        </Text>
-      </View>
-      <FlatList
-        key={"_"}
-        data={users}
-        renderItem={({ item }) => (
-          <View style={styles.flatlistContainer}>
-            <View style={styles.imageAndNameContainer}>
-              <View style={styles.imageContainer}>
-                <Image style={styles.image} source={{ uri: item.imageUrl }} />
-              </View>
-              <Text style={styles.username}>{item.name}</Text>
-            </View>
-            {isAdmin ? (
-              <Pressable onPress={() => console.log(`Remove = ${item.name}`)}>
-                <MaterialIcons
-                  name="highlight-remove"
-                  size={24}
-                  color="white"
-                />
-              </Pressable>
-            ) : null}
-          </View>
+        {creatingParty ? (
+          <Text style={styles.questionText}>Creating Party...</Text>
+        ) : (
+          <Text style={styles.questionText}>
+            Your friends can join using the party id: {partyId}
+          </Text>
         )}
-        keyExtractor={(item) => item.name}
-        showsVerticalScrollIndicator={false}
-        style={styles.flatlist}
-      />
+      </View>
+      {creatingParty ? null : (
+        <FlatList
+          key={"_"}
+          data={users}
+          renderItem={({ item }) => (
+            <View style={styles.flatlistContainer}>
+              <View style={styles.imageAndNameContainer}>
+                <View style={styles.imageContainer}>
+                  <Image style={styles.image} source={{ uri: item.imageUrl }} />
+                </View>
+                <Text style={styles.username}>{item.name}</Text>
+              </View>
+              {isAdmin ? (
+                <Pressable onPress={() => console.log(`Remove = ${item.name}`)}>
+                  <MaterialIcons
+                    name="highlight-remove"
+                    size={24}
+                    color="white"
+                  />
+                </Pressable>
+              ) : null}
+            </View>
+          )}
+          keyExtractor={(item) => item.name}
+          showsVerticalScrollIndicator={false}
+          style={styles.flatlist}
+        />
+      )}
       {isAdmin ? (
         <Pressable onPress={startPartyClickHandler} style={styles.pressable}>
           <Text style={styles.text}>Start The Party</Text>
@@ -173,8 +182,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   flatlistContainer: {
     flexDirection: "row",

@@ -9,6 +9,7 @@ export const SET_GAME_STARTED = "SET_GAME_STARTED";
 export const SET_NUMBER_OF_PEOPLE_ANSWERED = "SET_NUMBER_OF_PEOPLE_ANSWERED";
 export const SET_SHOW_LEADERBOARD = "SET_SHOW_LEADERBOARD";
 export const SET_QUESTION_NUMBER = "SET_QUESTION_NUMBER";
+export const SET_CREATING_PARTY = "SET_CREATING_PARTY";
 
 export const setPartyIdRedux = (id) => ({
   type: SET_PARTYID,
@@ -61,5 +62,10 @@ export const setShowLeaderboard = (value) => ({
 
 export const setQuestionNumber = (value) => ({
   type: SET_QUESTION_NUMBER,
+  payload: value,
+});
+
+export const setCreatingParty = (value) => ({
+  type: SET_CREATING_PARTY,
   payload: value,
 });

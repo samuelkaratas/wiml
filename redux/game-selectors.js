@@ -38,3 +38,8 @@ export const selectQuestionNumber = createSelector(
   [gameSelector],
   (game) => game.questionNumber
 );
+
+export const selectCreatingParty = createSelector(
+  [gameSelector],
+  (game) => game.creatingParty
+);
