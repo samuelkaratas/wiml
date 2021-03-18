@@ -13,7 +13,14 @@ const UserButton = ({ onPress, username, imageUrl }) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image style={styles.image} source={{ uri: imageUrl }} />
+        <Image
+          style={styles.image}
+          source={
+            imageUrl
+              ? { uri: imageUrl }
+              : require("../../assets/user-profile2.webp")
+          }
+        />
       </View>
       <Text style={styles.username}>{username}</Text>
     </TouchableOpacity>
@@ -24,8 +31,9 @@ const styles = StyleSheet.create({
   container: {
     width: 100,
     height: 100,
-    borderColor: "grey",
+    borderColor: "white",
     borderWidth: 1,
+    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
     margin: 5,
@@ -39,8 +47,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   username: {
     color: "white",

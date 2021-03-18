@@ -52,6 +52,8 @@ import {
   removeUserFromFirebase,
 } from "../../firebase/firebase";
 
+let seenQuestions = [];
+
 const GameScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -69,6 +71,8 @@ const GameScreen = () => {
   const [array, setArray] = useState(null);
   const [questionText, setQuestionText] = useState(null);
   const [selected, setSelected] = useState(false);
+  const [skipped, setSkipped] = useState(false);
+  const [finished, setFinished] = useState(false);
 
   const nextClicked = async () => {
     if (isAdmin) {
@@ -88,7 +92,7 @@ const GameScreen = () => {
     let unmounted = false;
 
     const runFunction = async () => {
-      console.log("questionNumber" + questionNumber);
+      //console.log("questionNumber" + questionNumber);
       const returnedObject = await getQuestionText(questionNumber);
       setQuestionText(returnedObject.questionText);
     };
@@ -112,20 +116,38 @@ const GameScreen = () => {
             const filteredArray = returnedArray.filter(
               (val) => val.score !== 0
             );
-            filteredArray.sort((a, b) => b.score - a.score);
-            setHighscore(filteredArray[0].score);
-            setArray(filteredArray);
+            if (filteredArray.length) {
+              filteredArray.sort((a, b) => b.score - a.score);
+              setHighscore(filteredArray[0].score);
+              setArray(filteredArray);
+            } else {
+              setSkipped(true);
+            }
           }
         });
       } else {
         if (isAdmin) {
           resetNumberOfAnswered(partyId);
-          updateQuestionNumber(partyId);
+          let num = 0;
+          if (seenQuestions.length >= 261) {
+            alert(
+              "Woooowww!! You people must be hammered because I am all out of questions."
+            );
+            leaveParty();
+          }
+          do {
+            num = chooseQuestionNumber();
+          } while (num === null);
+
+          //console.log(num);
+          updateQuestionNumber(num, partyId);
+          //console.log(seenQuestions);
         }
         resetScore(partyId, userId);
         setHighscore(null);
         setArray(null);
         setSelected(false);
+        setSkipped(false);
       }
     }
 
@@ -133,6 +155,17 @@ const GameScreen = () => {
       unmounted = true;
     };
   }, [showLeaderboard]);
+
+  const chooseQuestionNumber = () => {
+    const randomNumber = Math.floor(Math.random() * 262);
+    if (seenQuestions.includes(randomNumber)) {
+      //console.log(randomNumber + " has been seen before!");
+      return null;
+    } else {
+      seenQuestions.push(randomNumber);
+      return randomNumber;
+    }
+  };
 
   useEffect(() => {
     let unmounted = false;
@@ -142,7 +175,7 @@ const GameScreen = () => {
         nextClicked();
       }
     }
-    
+
     return () => {
       unmounted = true;
     };
@@ -163,27 +196,30 @@ const GameScreen = () => {
     }).start();
   }, [numOfAnswered]);
 
+  const leaveParty = () => {
+    detachJoinedListener(partyId);
+    detachStartedListener(partyId);
+    detachAnsweredListener(partyId);
+    detachShowLeaderboardListener(partyId);
+    detachQuestionNumberListener(partyId);
+    removeUserFromFirebase(partyId, userId);
+    dispatch(setPartyIdRedux(null));
+    dispatch(setUserId(0));
+    dispatch(setIsAdmin(null));
+    dispatch(resetUsers());
+    dispatch(setGameStarted(false));
+    dispatch(setNumberOfPeopleAnswered(0));
+    dispatch(setShowLeaderboard(false));
+    dispatch(setQuestionNumber(0));
+    seenQuestions = [];
+    navigation.navigate("Home");
+  };
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Pressable
-          onPress={() => {
-            detachJoinedListener(partyId);
-            detachStartedListener(partyId);
-            detachAnsweredListener(partyId);
-            detachShowLeaderboardListener(partyId);
-            detachQuestionNumberListener(partyId);
-            removeUserFromFirebase(partyId, userId);
-            dispatch(setPartyIdRedux(null));
-            dispatch(setUserId(0));
-            dispatch(setIsAdmin(null));
-            dispatch(resetUsers());
-            dispatch(setGameStarted(false));
-            dispatch(setNumberOfPeopleAnswered(0));
-            dispatch(setShowLeaderboard(false));
-            dispatch(setQuestionNumber(0));
-            navigation.navigate("Home");
-          }}
+          onPress={leaveParty}
           style={{ marginRight: 10, alignSelf: "center" }}
         >
           <FontAwesome name="sign-out" size={26} color="white" />
@@ -206,6 +242,8 @@ const GameScreen = () => {
         ) : (
           <Text style={styles.text}>Waiting for others...</Text>
         )
+      ) : skipped ? (
+        <Text style={styles.text}>Host skipped the question</Text>
       ) : (
         <LeaderboardList array={array} highscore={highscore} />
       )}
@@ -251,19 +289,18 @@ const styles = StyleSheet.create({
   pressable: {
     width: 100,
     height: 50,
-    position: "absolute",
     borderColor: "white",
     borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 25,
     flexDirection: "row",
-    bottom: 30,
-    right: 30,
+    marginBottom: 20,
   },
   text: {
     fontSize: 16,
     color: "white",
+    marginBottom: 10,
   },
 });
 

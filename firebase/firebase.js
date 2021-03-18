@@ -73,12 +73,12 @@ export const createParty = (partyId, userInfo) => {
         questionNumber: 0,
       })
       .then((data) => {
-        console.log(data);
+        //console.log(data);
 
         dispatch(setCreatingParty(false));
       });
 
-    console.log("now");
+    //console.log("now");
   };
 };
 
@@ -101,8 +101,8 @@ export const setupJoinedListener = (partyId) => {
     ref.on(
       "child_added",
       (data) => {
-        console.log("child is added!!");
-        console.log(data.val().name);
+        //console.log("child is added!!");
+        //console.log(data.val().name);
 
         var item = data.val();
         item.key = data.key;
@@ -124,8 +124,8 @@ export const setupSignoutListener = (partyId) => {
     ref.on(
       "child_removed",
       (data) => {
-        console.log("child is removed!!");
-        console.log(data.val());
+        //console.log("child is removed!!");
+        //console.log(data.val());
 
         var item = data.val();
         item.key = data.key;
@@ -188,7 +188,7 @@ const setupStartedListener = (partyId) => {
         "value",
         (snapshot) => {
           if (snapshot.val()) {
-            console.log("Game has started");
+            //console.log("Game has started");
             dispatch(setGameStarted(true));
           }
         },
@@ -312,7 +312,7 @@ export const setupShowLeaderboardListener = (partyId) => {
       .on(
         "value",
         (snapshot) => {
-          console.log("in firebase setup" + snapshot.val());
+          //console.log("in firebase setup" + snapshot.val());
           dispatch(setShowLeaderboard(snapshot.val()));
         },
         function (error) {
@@ -339,8 +339,7 @@ export const detachShowLeaderboardListener = (partyId) => {
     .off();
 };
 
-export const updateQuestionNumber = (partyId) => {
-  const randomNumber = Math.floor(Math.random() * 47);
+export const updateQuestionNumber = (randomNumber, partyId) => {
   firebase
     .database()
     .ref("parties/" + partyId)

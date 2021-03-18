@@ -25,6 +25,7 @@ const LeaderboardList = ({ array, highscore }) => {
 const styles = StyleSheet.create({
   flatlist: {
     height: 470,
+    width: "95%",
     flexGrow: 0,
   },
 });

@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  KeyboardAvoidingView,
+  SafeAreaView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Text,
+  StyleSheet,
+} from "react-native";
 
 import ChooseImage from "../../components/chooseImage/chooseImage";
 
@@ -138,7 +146,7 @@ const JoinPartScreen = (props) => {
     })
       .then(async (r) => {
         let data = await r.json();
-        console.log(data.secure_url);
+        //console.log(data.secure_url);
         setImage(data.secure_url);
         setLoadingPhoto(false);
         return data.secure_url;
@@ -147,34 +155,43 @@ const JoinPartScreen = (props) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ChooseImage image={image} onPress={onImagePressed} />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : null}
+      style={{ width: "100%", height: "100%" }}
+    >
+      <SafeAreaView style={styles.container}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.innerContainer}>
+            <ChooseImage image={image} onPress={onImagePressed} />
 
-      <CustomInput
-        placeholder="NAME"
-        value={name}
-        onChangeText={(text) => onNameChange(text)}
-      />
+            <CustomInput
+              placeholder="NAME"
+              value={name}
+              onChangeText={(text) => onNameChange(text)}
+            />
 
-      <CustomInput
-        placeholder="PARTY ID"
-        value={partyId}
-        onChangeText={(text) => onPartyIdChange(text)}
-      />
+            <CustomInput
+              placeholder="PARTY ID"
+              value={partyId}
+              onChangeText={(text) => onPartyIdChange(text)}
+            />
 
-      {loadingPhoto ? (
-        <Text>Uploading photo to service...</Text>
-      ) : (
-        <CustomButton onPress={onJoinHandler}>Join</CustomButton>
-      )}
+            {loadingPhoto ? (
+              <Text>Uploading photo to service...</Text>
+            ) : (
+              <CustomButton onPress={onJoinHandler}>Join</CustomButton>
+            )}
 
-      <ImageChooserModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        onCameraRoll={onCameraRoll}
-        onCamera={onCamera}
-      />
-    </View>
+            <ImageChooserModal
+              modalVisible={modalVisible}
+              setModalVisible={setModalVisible}
+              onCameraRoll={onCameraRoll}
+              onCamera={onCamera}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -182,8 +199,13 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
+  },
+  innerContainer: {
+    width: "100%",
+    height: "100%",
+    paddingVertical: 30,
     alignItems: "center",
-    marginTop: 200,
+    justifyContent: "flex-end",
   },
   partyIdText: {
     alignSelf: "center",

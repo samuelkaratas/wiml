@@ -52,15 +52,17 @@ const LobbyScreen = () => {
   const creatingParty = useSelector(selectCreatingParty);
 
   useEffect(() => {
-    console.log("users");
-    console.log(users);
+    //console.log("users");
+    //console.log(users);
     setupSignoutListener(partyId)(dispatch, navigation);
   }, []);
 
   useEffect(() => {
-    console.log(started);
+    //console.log(started);
     if (started) {
-      navigation.navigate("Game");
+      navigation.navigate("Game", {
+        partyName: partyId,
+      });
     }
   }, [started]);
 
@@ -97,9 +99,16 @@ const LobbyScreen = () => {
         {creatingParty ? (
           <Text style={styles.questionText}>Creating Party...</Text>
         ) : (
-          <Text style={styles.questionText}>
-            Your friends can join using the party id: {partyId}
-          </Text>
+          <View style={styles.innerTextQrContainer}>
+            <Text style={styles.questionText}>
+              Your friends can go to <Text style={{textDecorationLine: 'underline'}}>whoismostlikely.com</Text> or scan the qr code
+              below and enter the party id: {partyId} to join your party
+            </Text>
+            <Image
+              style={styles.qrImage}
+              source={require("../../assets/frame.png")}
+            />
+          </View>
         )}
       </View>
       {creatingParty ? null : (
@@ -110,7 +119,14 @@ const LobbyScreen = () => {
             <View style={styles.flatlistContainer}>
               <View style={styles.imageAndNameContainer}>
                 <View style={styles.imageContainer}>
-                  <Image style={styles.image} source={{ uri: item.imageUrl }} />
+                  <Image
+                    style={styles.image}
+                    source={
+                      item.imageUrl
+                        ? { uri: item.imageUrl }
+                        : require("../../assets/user-profile2.webp")
+                    }
+                  />
                 </View>
                 <Text style={styles.username}>{item.name}</Text>
               </View>
@@ -187,7 +203,7 @@ const styles = StyleSheet.create({
   },
   flatlistContainer: {
     flexDirection: "row",
-    marginBottom: 5,
+    marginVertical: 5,
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
@@ -198,12 +214,22 @@ const styles = StyleSheet.create({
   },
   questionText: {
     color: "white",
-    fontSize: 30,
+    fontSize: 25,
     alignItems: "center",
     textAlign: "center",
-    lineHeight: 50,
+    lineHeight: 40,
     marginTop: 100,
     marginBottom: 10,
+  },
+  qrImage: {
+    width: 80,
+    height: 80,
+  },
+  textContainer: {
+    width: "95%",
+  },
+  innerTextQrContainer: {
+    alignItems: "center",
   },
 });
 

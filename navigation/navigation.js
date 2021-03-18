@@ -70,11 +70,12 @@ const MainNavigatior = () => {
 
         <Stack.Screen
           name="Game"
-          options={{
+          options={({ route }) => ({
+            title: route.params.partyName,
             headerTransparent: true,
             headerTintColor: "#fff",
             headerLeft: () => null,
-          }}
+          })}
         >
           {(props) => (
             <ImageBackground

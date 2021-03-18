@@ -32,14 +32,14 @@ const RotateView = (props) => {
   useEffect(() => {
     startImageRotateFunction();
 
-    setTimeout(() => {
+    let timer1 = setTimeout(() => {
       setAnimate(false);
     }, 2000);
 
-    return function cleanup() {
-      setAnimate(false);
+    return () => {
+      clearTimeout(timer1);
     };
-  });
+  }, []);
 
   const RotateData = rotateValueHolder.interpolate({
     inputRange: [0, 1],
@@ -62,7 +62,14 @@ const LeaderboardItem = ({ username, score, imageUrl, isDrinking }) => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image style={styles.image} source={{ uri: imageUrl }} />
+        <Image
+          style={styles.image}
+          source={
+            imageUrl
+              ? { uri: imageUrl }
+              : require("../../assets/user-profile2.webp")
+          }
+        />
       </View>
       {isDrinking ? (
         <RotateView>
@@ -77,13 +84,14 @@ const LeaderboardItem = ({ username, score, imageUrl, isDrinking }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 300,
+    width: "100%",
     height: 100,
-    borderColor: "grey",
+    borderColor: "white",
     borderWidth: 1,
+    borderRadius: 10,
     alignItems: "center",
-    margin: 5,
     flexDirection: "row",
+    marginBottom: 5,
   },
   imageContainer: {
     width: 80,
@@ -95,8 +103,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   username: {
     color: "white",
