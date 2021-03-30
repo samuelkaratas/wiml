@@ -43,7 +43,7 @@ export const gameReducer = (state = INITIAL_STATE, action) => {
       const filteredUsers = state.users.filter(
         (user) => user.key !== action.payload.key
       );
-      console.log(filteredUsers);
+      //console.log(filteredUsers);
       return {
         ...state,
         users: filteredUsers,

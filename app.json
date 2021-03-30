@@ -1,14 +1,15 @@
 {
   "expo": {
-    "name": "wiml",
-    "slug": "wiml",
+    "name": "Who Is Most Likely",
+    "description": "A drinking game for horrible people",
+    "slug": "who-is-most-likely",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/app_icon.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash_screen.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#28a2a7"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -17,13 +18,18 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "com.samuelkaratas.who-is-mostabc",
+      "buildNumber": "1.0.0",
       "supportsTablet": true
     },
     "android": {
+      "package": "com.samuelkaratas.who_is_mostabc",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"]
     },
     "web": {
       "favicon": "./assets/favicon.png"

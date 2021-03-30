@@ -28,7 +28,7 @@ import {
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { setPartyIdRedux, setIsAdmin } from "../../redux/game-actions";
+import { setPartyIdRedux, setIsAdmin, setCreatingParty } from "../../redux/game-actions";
 
 const JoinPartScreen = (props) => {
   const navigation = useNavigation();
@@ -44,19 +44,24 @@ const JoinPartScreen = (props) => {
 
   const onJoinHandler = async () => {
     const exsist = await checkIfRoomExsist(partyId);
-    if (exsist) {
-      joinParty(partyId, {
-        name: name,
-        imageUrl: image,
-        isAdmin: false,
-        score: 0,
-      })(dispatch);
-      setupJoinedListener(partyId)(dispatch);
-      dispatch(setPartyIdRedux(partyId));
-      dispatch(setIsAdmin(false));
-      navigation.navigate("Lobby");
+    if (name.length && partyId.length) {
+      if (exsist) {
+        dispatch(setCreatingParty(true));
+        joinParty(partyId, {
+          name: name,
+          imageUrl: image,
+          isAdmin: false,
+          score: 0,
+        })(dispatch);
+        setupJoinedListener(partyId)(dispatch);
+        dispatch(setPartyIdRedux(partyId));
+        dispatch(setIsAdmin(false));
+        navigation.navigate("Lobby");
+      } else {
+        alert("Party doesn't exsist");
+      }
     } else {
-      alert("Party doesn't exsist");
+      alert("Please fill out all the fields.");
     }
   };
 

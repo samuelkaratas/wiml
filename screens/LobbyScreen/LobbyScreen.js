@@ -97,12 +97,16 @@ const LobbyScreen = () => {
     <View style={styles.container}>
       <View style={styles.textContainer}>
         {creatingParty ? (
-          <Text style={styles.questionText}>Creating Party...</Text>
+          <Text style={styles.questionText}>Loading Party...</Text>
         ) : (
           <View style={styles.innerTextQrContainer}>
             <Text style={styles.questionText}>
-              Your friends can go to <Text style={{textDecorationLine: 'underline'}}>whoismostlikely.com</Text> or scan the qr code
-              below and enter the party id: {partyId} to join your party
+              Your friends can go to{" "}
+              <Text style={{ textDecorationLine: "underline" }}>
+                whoismostlikely.com
+              </Text>{" "}
+              or scan the qr code below and enter the party id: {partyId} to
+              join your party
             </Text>
             <Image
               style={styles.qrImage}
@@ -165,14 +169,14 @@ const styles = StyleSheet.create({
   pressable: {
     width: "80%",
     height: 50,
-    position: "absolute",
+    position: 'absolute',
     borderColor: "white",
     borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 25,
     flexDirection: "row",
-    bottom: 30,
+    bottom: 25
   },
   text: {
     fontSize: 16,
@@ -184,9 +188,10 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   flatlist: {
-    maxHeight: 600,
+    maxHeight: 500,
     flexGrow: 0,
     width: "60%",
+    marginBottom: 80
   },
   imageContainer: {
     width: 50,

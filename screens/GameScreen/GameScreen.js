@@ -289,13 +289,15 @@ const styles = StyleSheet.create({
   pressable: {
     width: 100,
     height: 50,
+    position: "absolute",
     borderColor: "white",
     borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 25,
     flexDirection: "row",
-    marginBottom: 20,
+    bottom: 25,
+    right: 25,
   },
   text: {
     fontSize: 16,

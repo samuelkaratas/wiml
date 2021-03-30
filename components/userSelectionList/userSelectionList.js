@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
   flatlist: {
     height: 470,
     flexGrow: 0,
+    marginBottom: 75,
   },
 });
 

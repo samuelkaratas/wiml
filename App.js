@@ -14,11 +14,6 @@ const store = createStore(rootReducer);
 
 import MainNavigatior from "./navigation/navigation";
 
-import CreatePartyScreen from "./screens/CreatePartyScreen/CreatePartyScreen";
-import GameScreen from "./screens/GameScreen/GameScreen";
-import HomeScreen from "./screens/HomeScreen/HomeScreen";
-import JoinPartScreen from "./screens/JoinPartScreen/JoinPartyScreen";
-
 export default function App() {
   return (
     <Provider store={store}>

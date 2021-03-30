@@ -91,6 +91,7 @@ export const joinParty = (partyId, userInfo) => {
       .getKey();
 
     dispatch(setUserId(key));
+    dispatch(setCreatingParty(false));
   };
 };
 

@@ -320,14 +320,18 @@ const CreatePartyScreen = (props) => {
   const [loadingPhoto, setLoadingPhoto] = useState(false);
 
   const onCreateHandler = () => {
-    dispatch(setCreatingParty(true));
-    createParty(partyId, [
-      { name: value, imageUrl: image, isAdmin: true, score: 0 },
-    ])(dispatch);
-    setupJoinedListener(partyId)(dispatch);
-    dispatch(setPartyIdRedux(partyId));
-    dispatch(setIsAdmin(true));
-    navigation.navigate("Lobby");
+    if(value.length) {
+      dispatch(setCreatingParty(true));
+      createParty(partyId, [
+        { name: value, imageUrl: image, isAdmin: true, score: 0 },
+      ])(dispatch);
+      setupJoinedListener(partyId)(dispatch);
+      dispatch(setPartyIdRedux(partyId));
+      dispatch(setIsAdmin(true));
+      navigation.navigate("Lobby");
+    } else {
+      alert("Please fill out all the fields.");
+    }
   };
 
   useEffect(() => {

@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     height: 470,
     width: "95%",
     flexGrow: 0,
+    marginBottom: 75,
   },
 });
 
