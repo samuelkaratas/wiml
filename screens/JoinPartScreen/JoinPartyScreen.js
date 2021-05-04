@@ -7,6 +7,7 @@ import {
   Keyboard,
   Text,
   StyleSheet,
+  ActionSheetIOS,
 } from "react-native";
 
 import ChooseImage from "../../components/chooseImage/chooseImage";
@@ -28,7 +29,11 @@ import {
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { setPartyIdRedux, setIsAdmin, setCreatingParty } from "../../redux/game-actions";
+import {
+  setPartyIdRedux,
+  setIsAdmin,
+  setCreatingParty,
+} from "../../redux/game-actions";
 
 const JoinPartScreen = (props) => {
   const navigation = useNavigation();
@@ -41,61 +46,89 @@ const JoinPartScreen = (props) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [loadingPhoto, setLoadingPhoto] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onJoinHandler = async () => {
-    const exsist = await checkIfRoomExsist(partyId);
-    if (name.length && partyId.length) {
-      if (exsist) {
-        dispatch(setCreatingParty(true));
-        joinParty(partyId, {
-          name: name,
-          imageUrl: image,
-          isAdmin: false,
-          score: 0,
-        })(dispatch);
-        setupJoinedListener(partyId)(dispatch);
-        dispatch(setPartyIdRedux(partyId));
-        dispatch(setIsAdmin(false));
-        navigation.navigate("Lobby");
-      } else {
-        alert("Party doesn't exsist");
-      }
-    } else {
-      alert("Please fill out all the fields.");
-    }
+    setLoading(true);
   };
 
   useEffect(() => {
-    (async () => {
-      if (Platform.OS !== "web") {
-        const {
-          status,
-        } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") {
-          alert("Sorry, we need camera roll permissions to make this work!");
+    const asyncFunction = async () => {
+      const exsist = await checkIfRoomExsist(partyId);
+      if (name.length && partyId.length) {
+        if (exsist) {
+          dispatch(setCreatingParty(true));
+          joinParty(partyId, {
+            name: name,
+            imageUrl: image,
+            isAdmin: false,
+            score: 0,
+          })(dispatch);
+          setupJoinedListener(partyId)(dispatch);
+          dispatch(setPartyIdRedux(partyId));
+          dispatch(setIsAdmin(false));
+          setLoading(false);
+          navigation.navigate("Lobby");
+        } else {
+          alert("Party doesn't exsist");
+          setLoading(false);
         }
+      } else {
+        alert("Please fill out all the fields.");
+        setLoading(false);
       }
-    })();
-  }, []);
+    };
+    if (loading) {
+      asyncFunction();
+    }
+  }, [loading]);
+
+  const verifyPermissions2 = async () => {
+    if (Platform.OS !== "web") {
+      const {
+        status,
+      } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        alert("Sorry, we need camera roll permissions to make this work!");
+        return false;
+      }
+      return true;
+    }
+  };
 
   const verifyPermissions = async () => {
     const result = await Permissions.askAsync(Permissions.CAMERA);
     if (result.status !== "granted") {
-      Alert.alert(
-        "Insufficient permissions!",
-        "You need to grant camera permissions to use this app.",
-        [{ text: "Okay" }]
-      );
+      alert("Sorry, we need camera permissions to make this work!");
       return false;
     }
     return true;
   };
 
   const onImagePressed = () => {
-    setModalVisible(true);
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Cancel", "Choose photo from camera roll", "Take photo"],
+        cancelButtonIndex: 0,
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          // cancel action
+          console.log("cancel");
+        } else if (buttonIndex === 1) {
+          onCameraRoll();
+        } else if (buttonIndex === 2) {
+          onCamera();
+        }
+      }
+    );
   };
 
   const onCameraRoll = async () => {
+    const hasPermission = await verifyPermissions2();
+    if (!hasPermission) {
+      return;
+    }
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -112,7 +145,7 @@ const JoinPartScreen = (props) => {
       cloudinaryUpload(base64Img);
     }
 
-    setModalVisible(false);
+    //setModalVisible(false);
   };
 
   const onCamera = async () => {
@@ -132,7 +165,7 @@ const JoinPartScreen = (props) => {
 
     cloudinaryUpload(base64Img);
     //setImage(image.uri);
-    setModalVisible(false);
+    //setModalVisible(false);
   };
 
   const cloudinaryUpload = (photo) => {
@@ -183,6 +216,8 @@ const JoinPartScreen = (props) => {
 
             {loadingPhoto ? (
               <Text>Uploading photo to service...</Text>
+            ) : loading ? (
+              <Text>Joining...</Text>
             ) : (
               <CustomButton onPress={onJoinHandler}>Join</CustomButton>
             )}
@@ -208,7 +243,7 @@ const styles = StyleSheet.create({
   innerContainer: {
     width: "100%",
     height: "100%",
-    paddingVertical: 30,
+    paddingVertical: 40,
     alignItems: "center",
     justifyContent: "flex-end",
   },

@@ -7,6 +7,7 @@ import {
   Keyboard,
   StyleSheet,
   SafeAreaView,
+  ActionSheetIOS,
 } from "react-native";
 
 import ChooseImage from "../../components/chooseImage/chooseImage";
@@ -60,7 +61,7 @@ const data = [
   "Who is most likely to be a world traveler?",
   'Who is most likely to have their last words be "watch this”?',
   "Who is most likely to sell all their worldly possessions?",
-  "Who is most likely to full around with someone at a party even though their partners there?",
+  "Who is most likely to fool around with someone at a party even though their partners there?",
   "Who is most likely to run from the police officer?",
   "Who is most likely to be hungry 24/7?",
   "Who is most likely to trip in public?",
@@ -298,7 +299,48 @@ const data = [
   "Who is most likely to injured themselves during sex?",
   "Who is most likely to watch porn with a friend?",
   "Who is most likely to sniff someones underwear?",
-  "Who is most likely to have an abortion?",
+  "Who is most likely	to snort alcohol in order to try to get high?",
+  "Who is most likely	to find feet sexy?",
+  "Who is most likely	to receive bribes if they were government officials?",
+  "Who is most likely	to have sex tonight?",
+  "Who is most likely	to be into anal sex?",
+  "Who is most likely	to have used butt-plug before?",
+  "Who is most likely	to have a horrible moaning?",
+  "Who is most likely	to snore?",
+  "Who is most likely	to be the president of the country?",
+  "Who is most likely	to get caught picking their nose?",
+  "Who is most likely	to fight with the police?",
+  "Who is most likely	to discover that they have a different sexual orientation?",
+  "Who hates their job the most?",
+  "Who is most likely	to break one of their limbs on purpose to get painkiller medications?",
+  "Who is most likely	to die because of drugs?",
+  "Who is most likely	to die first?",
+  "Who had sex with the most amount of people?",
+  "Who swims naked the most?",
+  "Who is most likely	to poop their underwear while trying to fart?",
+  "Who is most likely	to run into a glass wall because they were focused on their phone?",
+  "Who is most likely	to want their ass fingered while having sex?",
+  "Who is most likely	to sleep with their boss?",
+  "Who is most likely	to sleep with their teacher?",
+  "Who is most likely	to watch the entire -How I Met Your Mother?- in a week?",
+  "Who is most likely	to eat someone's sandwich from the company fridge?",
+  "Who is most likely	to photocopy their ass and try to make it the company logo?",
+  "Who is most likely	to paint people's ass and make a painting on the wall?",
+  "Who is most likely	to grow marijuana in their home?",
+  "Who is most likely	to lie on first date?",
+  "Who is most likely	to have fake social media account? ",
+  "Who is most likely	to cheat?",
+  "Who is most likely	to kill someone?",
+  "Who is most likely	to tell friends' secrets?",
+  "Who is most likely	to be the president of the country?",
+  "Who is most likely	to adopt a disabled animal?",
+  "Who is most likely	to give their last money to a friend in need?",
+  "Who is most likely	to have a positive impact on humanity?",
+  "Who is most likely	to marry someone to give them citizenship?",
+  "Who is most likely	to adopt a child?",
+  "Who is the best at sex?",
+  "Who is most likely	to be called when in need?",
+  "Who is most likely	to protest against cutting of trees?",
 ];
 
 const CreatePartyScreen = (props) => {
@@ -320,7 +362,7 @@ const CreatePartyScreen = (props) => {
   const [loadingPhoto, setLoadingPhoto] = useState(false);
 
   const onCreateHandler = () => {
-    if(value.length) {
+    if (value.length) {
       dispatch(setCreatingParty(true));
       createParty(partyId, [
         { name: value, imageUrl: image, isAdmin: true, score: 0 },
@@ -335,41 +377,58 @@ const CreatePartyScreen = (props) => {
   };
 
   useEffect(() => {
-    (async () => {
-      if (Platform.OS !== "web") {
-        const {
-          status,
-        } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") {
-          alert("Sorry, we need camera roll permissions to make this work!");
-        }
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
     const num = Math.floor(Math.random() * 100000 + 10);
     setPartyId(num);
   }, []);
 
+  const verifyPermissions2 = async () => {
+    if (Platform.OS !== "web") {
+      const {
+        status,
+      } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        alert("Sorry, we need camera roll permissions to make this work!");
+        return false;
+      }
+      return true;
+    }
+  };
+
   const verifyPermissions = async () => {
     const result = await Permissions.askAsync(Permissions.CAMERA);
     if (result.status !== "granted") {
-      Alert.alert(
-        "Insufficient permissions!",
-        "You need to grant camera permissions to use this app.",
-        [{ text: "Okay" }]
-      );
+      alert("Sorry, we need camera permissions to make this work!", [
+        { text: "Okay" },
+      ]);
       return false;
     }
     return true;
   };
 
   const onImagePressed = () => {
-    setModalVisible(true);
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Cancel", "Choose photo from camera roll", "Take photo"],
+        cancelButtonIndex: 0,
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          // cancel action
+          console.log("cancel");
+        } else if (buttonIndex === 1) {
+          onCameraRoll();
+        } else if (buttonIndex === 2) {
+          onCamera();
+        }
+      }
+    );
   };
 
   const onCameraRoll = async () => {
+    const hasPermission = await verifyPermissions2();
+    if (!hasPermission) {
+      return;
+    }
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -386,7 +445,7 @@ const CreatePartyScreen = (props) => {
       cloudinaryUpload(base64Img);
     }
 
-    setModalVisible(false);
+    //setModalVisible(false);
   };
 
   const onCamera = async () => {
@@ -406,7 +465,7 @@ const CreatePartyScreen = (props) => {
 
     cloudinaryUpload(base64Img);
     //setImage(image.uri);
-    setModalVisible(false);
+    //setModalVisible(false);
   };
 
   const cloudinaryUpload = (photo) => {
@@ -484,7 +543,7 @@ const styles = StyleSheet.create({
   innerContainer: {
     width: "100%",
     height: "100%",
-    paddingVertical: 30,
+    paddingVertical: 40,
     alignItems: "center",
     justifyContent: "flex-end",
   },

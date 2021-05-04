@@ -11,15 +11,21 @@ import JoinPartScreen from "../screens/JoinPartScreen/JoinPartyScreen";
 import GameScreen from "../screens/GameScreen/GameScreen";
 import LobbyScreen from "../screens/LobbyScreen/LobbyScreen";
 
+import { useSelector } from "react-redux";
+
+import { selectShowLeaderboard } from "../redux/game-selectors";
+
 const Stack = createStackNavigator();
 
 const MainNavigatior = () => {
+  const showLeaderboard = useSelector(selectShowLeaderboard);
   return (
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
           name="Home"
           options={{
+            title: "Who Is Most Likely",
             headerTransparent: true,
             headerTintColor: "#fff",
           }}
@@ -39,6 +45,7 @@ const MainNavigatior = () => {
           options={{
             headerTransparent: true,
             headerTintColor: "#fff",
+            headerBackTitleVisible: false,
           }}
         >
           {(props) => (
@@ -56,6 +63,7 @@ const MainNavigatior = () => {
           options={{
             headerTransparent: true,
             headerTintColor: "#fff",
+            headerBackTitleVisible: false,
           }}
         >
           {(props) => (
@@ -71,10 +79,11 @@ const MainNavigatior = () => {
         <Stack.Screen
           name="Game"
           options={({ route }) => ({
-            title: route.params.partyName,
+            title: showLeaderboard ? 'Who Is Most Likely' : `Party Id: ${route.params.partyName}`,
             headerTransparent: true,
             headerTintColor: "#fff",
             headerLeft: () => null,
+            gesturesEnabled: false,
           })}
         >
           {(props) => (
@@ -93,6 +102,7 @@ const MainNavigatior = () => {
             headerTransparent: true,
             headerTintColor: "#fff",
             headerLeft: () => null,
+            gesturesEnabled: false,
           }}
         >
           {(props) => (

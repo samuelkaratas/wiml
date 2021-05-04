@@ -21,6 +21,8 @@ import {
   setNumberOfPeopleAnswered,
   setShowLeaderboard,
   setQuestionNumber,
+  toggleEdit,
+  resetEdit
 } from "../../redux/game-actions";
 
 import {
@@ -31,6 +33,7 @@ import {
   selectNumberOfPeopleAnswered,
   selectShowLeaderboard,
   selectQuestionNumber,
+  selectEdit,
 } from "../../redux/game-selectors";
 
 import {
@@ -64,6 +67,7 @@ const GameScreen = () => {
   const userId = useSelector(selectUserId);
   const showLeaderboard = useSelector(selectShowLeaderboard);
   const questionNumber = useSelector(selectQuestionNumber);
+  const edit = useSelector(selectEdit);
 
   const numOfAnswered = useSelector(selectNumberOfPeopleAnswered);
 
@@ -129,7 +133,7 @@ const GameScreen = () => {
         if (isAdmin) {
           resetNumberOfAnswered(partyId);
           let num = 0;
-          if (seenQuestions.length >= 261) {
+          if (seenQuestions.length >= 301) {
             alert(
               "Woooowww!! You people must be hammered because I am all out of questions."
             );
@@ -157,7 +161,7 @@ const GameScreen = () => {
   }, [showLeaderboard]);
 
   const chooseQuestionNumber = () => {
-    const randomNumber = Math.floor(Math.random() * 262);
+    const randomNumber = Math.floor(Math.random() * 302);
     if (seenQuestions.includes(randomNumber)) {
       //console.log(randomNumber + " has been seen before!");
       return null;
@@ -171,7 +175,7 @@ const GameScreen = () => {
     let unmounted = false;
 
     if (!unmounted) {
-      if (numOfAnswered === users.length) {
+      if (numOfAnswered >= users.length) {
         nextClicked();
       }
     }
@@ -211,6 +215,7 @@ const GameScreen = () => {
     dispatch(setNumberOfPeopleAnswered(0));
     dispatch(setShowLeaderboard(false));
     dispatch(setQuestionNumber(0));
+    dispatch(resetEdit());
     seenQuestions = [];
     navigation.navigate("Home");
   };
@@ -227,6 +232,10 @@ const GameScreen = () => {
       ),
     });
   }, [navigation]);
+
+  const editPlayersClicked = () => {
+    dispatch(toggleEdit());
+  };
 
   return (
     <View style={styles.container}>
@@ -249,7 +258,10 @@ const GameScreen = () => {
       )}
 
       {isAdmin ? (
-        <Pressable onPress={nextClicked} style={styles.pressable}>
+        <Pressable
+          onPress={() => (!edit ? nextClicked() : null)}
+          style={styles.pressable}
+        >
           {!showLeaderboard ? (
             <Animated.View
               style={{
@@ -261,7 +273,9 @@ const GameScreen = () => {
               </Text>
             </Animated.View>
           ) : null}
-          <MaterialIcons name="navigate-next" size={30} color="white" />
+          {!edit ? (
+            <MaterialIcons name="navigate-next" size={30} color="white" />
+          ) : null}
         </Pressable>
       ) : !showLeaderboard ? (
         <View style={styles.pressable}>
@@ -275,6 +289,16 @@ const GameScreen = () => {
             </Text>
           </Animated.View>
         </View>
+      ) : null}
+
+      {isAdmin && !showLeaderboard && !selected ? (
+        <Pressable onPress={editPlayersClicked} style={styles.editPressable}>
+          {!edit ? (
+            <Text style={styles.text}>Edit Players</Text>
+          ) : (
+            <Text style={styles.text}>Stop Editing</Text>
+          )}
+        </Pressable>
       ) : null}
     </View>
   );
@@ -299,10 +323,23 @@ const styles = StyleSheet.create({
     bottom: 25,
     right: 25,
   },
+  editPressable: {
+    width: 100,
+    height: 50,
+    position: "absolute",
+    backgroundColor: "tomato",
+    borderColor: "white",
+    borderWidth: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 25,
+    flexDirection: "row",
+    bottom: 25,
+    left: 25,
+  },
   text: {
     fontSize: 16,
     color: "white",
-    marginBottom: 10,
   },
 });
 

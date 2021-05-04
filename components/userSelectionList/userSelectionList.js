@@ -12,13 +12,16 @@ const UserSelectionList = ({ data, onPress }) => {
       renderItem={({ item }) => (
         <UserButton
           onPress={() => {
+            console.log(item.key)
             onPress(item);
           }}
           username={item.name}
           imageUrl={item.imageUrl}
+          userId={item.key}
+          admin={item.isAdmin}
         />
       )}
-      keyExtractor={(item) => item.name}
+      keyExtractor={(item) => item.key}
       numColumns={3}
       showsVerticalScrollIndicator={false}
       style={styles.flatlist}

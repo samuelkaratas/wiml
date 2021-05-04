@@ -12,7 +12,7 @@ const ChooseImage = ({image, onPress}) => (
     </View>
     <Image
       style={styles.image}
-      source={image ? {uri: image} :require("../../assets/user-profile2.webp")}
+      source={image ? {uri: image} :require("../../assets/user_placeholder.png")}
     />
   </Pressable>
 );
@@ -33,11 +33,10 @@ const styles = StyleSheet.create({
   textContainer: {
     position: "absolute",
     zIndex: 1,
-    backgroundColor: "#bed4c7",
     width: 150,
-    height: 50,
+    height: 120,
     opacity: 0.9,
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignItems: "center",
   },
   text: {

@@ -9,6 +9,8 @@ import { SET_NUMBER_OF_PEOPLE_ANSWERED } from "./game-actions";
 import { SET_SHOW_LEADERBOARD } from "./game-actions";
 import { SET_QUESTION_NUMBER } from "./game-actions";
 import { SET_CREATING_PARTY } from "./game-actions";
+import { TOGGLE_EDIT } from "./game-actions";
+import { RESET_EDIT } from "./game-actions";
 
 const INITIAL_STATE = {
   partyId: null,
@@ -20,6 +22,7 @@ const INITIAL_STATE = {
   showLeaderboard: false,
   questionNumber: 0,
   creatingParty: false,
+  edit: false,
 };
 
 export const gameReducer = (state = INITIAL_STATE, action) => {
@@ -87,6 +90,17 @@ export const gameReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         creatingParty: action.payload,
+      };
+
+    case TOGGLE_EDIT:
+      return {
+        ...state,
+        edit: !state.edit,
+      };
+    case RESET_EDIT:
+      return {
+        ...state,
+        edit: false,
       };
     default:
       return state;

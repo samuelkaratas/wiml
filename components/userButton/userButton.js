@@ -9,9 +9,33 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-const UserButton = ({ onPress, username, imageUrl }) => {
+import { Ionicons } from "@expo/vector-icons";
+
+import { useDispatch, useSelector } from "react-redux";
+
+import { toggleEdit } from "../../redux/game-actions";
+
+import { selectEdit, selectPartyId } from "../../redux/game-selectors";
+
+import { removeUserFromFirebase } from "../../firebase/firebase";
+
+const UserButton = ({ onPress, username, userId, admin, imageUrl }) => {
+  const edit = useSelector(selectEdit);
+  const partyId = useSelector(selectPartyId);
+
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
+    <TouchableOpacity
+      onPress={() => (!edit ? onPress() : null)}
+      style={styles.container}
+    >
+      {edit && !admin ? (
+        <Pressable
+          onPress={() => removeUserFromFirebase(partyId, userId)}
+          style={styles.pressable}
+        >
+          <Ionicons name="md-remove" size={24} color="white" />
+        </Pressable>
+      ) : null}
       <View style={styles.imageContainer}>
         <Image
           style={styles.image}
@@ -37,6 +61,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     margin: 5,
+  },
+  pressable: {
+    width: 40,
+    height: 40,
+    backgroundColor: "tomato",
+    zIndex: 1,
+    position: "absolute",
+    borderColor: "white",
+    borderWidth: 1,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    right: -5,
+    top: -5,
   },
   imageContainer: {
     width: 60,

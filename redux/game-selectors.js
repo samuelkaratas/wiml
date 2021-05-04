@@ -43,3 +43,8 @@ export const selectCreatingParty = createSelector(
   [gameSelector],
   (game) => game.creatingParty
 );
+
+export const selectEdit = createSelector(
+  [gameSelector],
+  (game) => game.edit
+);

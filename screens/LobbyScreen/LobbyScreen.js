@@ -7,9 +7,10 @@ import {
   Image,
   Pressable,
   StyleSheet,
+  Share,
 } from "react-native";
 
-import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import { MaterialIcons, FontAwesome, EvilIcons } from "@expo/vector-icons";
 
 import { useNavigation } from "@react-navigation/native";
 
@@ -54,7 +55,7 @@ const LobbyScreen = () => {
   useEffect(() => {
     //console.log("users");
     //console.log(users);
-    setupSignoutListener(partyId)(dispatch, navigation);
+    setupSignoutListener(partyId, userId)(dispatch, navigation);
   }, []);
 
   useEffect(() => {
@@ -65,6 +66,29 @@ const LobbyScreen = () => {
       });
     }
   }, [started]);
+
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message: `Hop on to www.whoismostlikely.com and enter Party Id: ${partyId}`,
+        url: "www.whoismostlikely.com",
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+          alert("Shared!");
+        } else {
+          // shared
+          alert("Shared!");
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+        //alert('dismissed')
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -105,13 +129,21 @@ const LobbyScreen = () => {
               <Text style={{ textDecorationLine: "underline" }}>
                 whoismostlikely.com
               </Text>{" "}
-              or scan the qr code below and enter the party id: {partyId} to
+              or scan the QR code below and enter the party id: {partyId} to
               join your party
             </Text>
-            <Image
-              style={styles.qrImage}
-              source={require("../../assets/frame.png")}
-            />
+            <View style={styles.qrShareContainer}>
+              <Image
+                style={styles.qrImage}
+                source={require("../../assets/frame.png")}
+              />
+              <Pressable
+                onPress={onShare}
+                style={{ marginLeft: 10, alignSelf: "center" }}
+              >
+                <EvilIcons name="share-apple" size={30} color="white" />
+              </Pressable>
+            </View>
           </View>
         )}
       </View>
@@ -135,13 +167,17 @@ const LobbyScreen = () => {
                 <Text style={styles.username}>{item.name}</Text>
               </View>
               {isAdmin ? (
-                <Pressable onPress={() => console.log(`Remove = ${item.name}`)}>
-                  <MaterialIcons
-                    name="highlight-remove"
-                    size={24}
-                    color="white"
-                  />
-                </Pressable>
+                !item.isAdmin ? (
+                  <Pressable
+                    onPress={() => removeUserFromFirebase(partyId, item.key)}
+                  >
+                    <MaterialIcons
+                      name="highlight-remove"
+                      size={24}
+                      color="white"
+                    />
+                  </Pressable>
+                ) : null
               ) : null}
             </View>
           )}
@@ -169,14 +205,14 @@ const styles = StyleSheet.create({
   pressable: {
     width: "80%",
     height: 50,
-    position: 'absolute',
+    position: "absolute",
     borderColor: "white",
     borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 25,
     flexDirection: "row",
-    bottom: 25
+    bottom: 25,
   },
   text: {
     fontSize: 16,
@@ -191,7 +227,7 @@ const styles = StyleSheet.create({
     maxHeight: 500,
     flexGrow: 0,
     width: "60%",
-    marginBottom: 80
+    marginBottom: 80,
   },
   imageContainer: {
     width: 50,
@@ -235,6 +271,9 @@ const styles = StyleSheet.create({
   },
   innerTextQrContainer: {
     alignItems: "center",
+  },
+  qrShareContainer: {
+    flexDirection: "row",
   },
 });
 

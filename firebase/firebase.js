@@ -1,4 +1,7 @@
 import * as firebase from "firebase";
+
+import * as Analytics from 'expo-firebase-analytics';
+
 require("firebase/firestore");
 
 import {
@@ -14,6 +17,7 @@ import {
   setIsAdmin,
   resetUsers,
   setCreatingParty,
+  resetEdit,
 } from "../redux/game-actions";
 
 // Optionally import the services that you want to use
@@ -71,11 +75,13 @@ export const createParty = (partyId, userInfo) => {
         numberOfPeopleAnswered: 0,
         showLeaderboard: false,
         questionNumber: 0,
+        timestamp: Date.now(),
       })
       .then((data) => {
         //console.log(data);
 
         dispatch(setCreatingParty(false));
+        Analytics.logEvent('create_party');
       });
 
     //console.log("now");
@@ -92,6 +98,7 @@ export const joinParty = (partyId, userInfo) => {
 
     dispatch(setUserId(key));
     dispatch(setCreatingParty(false));
+    Analytics.logEvent('joined_party_app');
   };
 };
 
@@ -118,7 +125,7 @@ export const setupJoinedListener = (partyId) => {
   };
 };
 
-export const setupSignoutListener = (partyId) => {
+export const setupSignoutListener = (partyId, userId) => {
   return function (dispatch, navigation) {
     const ref = firebase.database().ref("parties/" + partyId + "/users");
 
@@ -131,7 +138,7 @@ export const setupSignoutListener = (partyId) => {
         var item = data.val();
         item.key = data.key;
 
-        if (item.isAdmin) {
+        if (item.isAdmin || data.key === userId) {
           detachJoinedListener(partyId);
           detachStartedListener(partyId);
           detachAnsweredListener(partyId);
@@ -145,6 +152,7 @@ export const setupSignoutListener = (partyId) => {
           dispatch(setNumberOfPeopleAnswered(0));
           dispatch(setShowLeaderboard(false));
           dispatch(setQuestionNumber(0));
+          dispatch(resetEdit());
           navigation.navigate("Home");
         } else {
           dispatch(removeUser(item));
@@ -169,7 +177,7 @@ export const removeUserFromFirebase = (partyId, userId) => {
 
     setTimeout(function () {
       ref2.remove();
-    }, 5000);
+    }, 2000);
   }
 };
 

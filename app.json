@@ -9,17 +9,16 @@
     "splash": {
       "image": "./assets/splash_screen.png",
       "resizeMode": "contain",
-      "backgroundColor": "#28a2a7"
+      "backgroundColor": "#EF7603"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.samuelkaratas.who-is-mostabc",
-      "buildNumber": "1.0.0",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "buildNumber": "1.0.4",
       "supportsTablet": true
     },
     "android": {
@@ -29,10 +28,26 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"]
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "config": {
+        "firebase": {
+          "apiKey": "AIzaSyD5ENR5XKI01zLSuoAFvEw8A_9jKLG0Xh4",
+          "authDomain": "wiml-5626d.firebaseapp.com",
+          "databaseURL": "https://wiml-5626d-default-rtdb.firebaseio.com",
+          "projectId": "wiml-5626d",
+          "storageBucket": "wiml-5626d.appspot.com",
+          "messagingSenderId": "936378370479",
+          "appId": "1:936378370479:web:795c02de652eeaced9875a",
+          "measurementId": "G-WZ6074H09Y"
+        }
+      }
     }
   }
 }

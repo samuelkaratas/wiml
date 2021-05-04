@@ -10,6 +10,8 @@ export const SET_NUMBER_OF_PEOPLE_ANSWERED = "SET_NUMBER_OF_PEOPLE_ANSWERED";
 export const SET_SHOW_LEADERBOARD = "SET_SHOW_LEADERBOARD";
 export const SET_QUESTION_NUMBER = "SET_QUESTION_NUMBER";
 export const SET_CREATING_PARTY = "SET_CREATING_PARTY";
+export const TOGGLE_EDIT = "TOGGLE_EDIT";
+export const RESET_EDIT = "RESET_EDIT";
 
 export const setPartyIdRedux = (id) => ({
   type: SET_PARTYID,
@@ -68,4 +70,12 @@ export const setQuestionNumber = (value) => ({
 export const setCreatingParty = (value) => ({
   type: SET_CREATING_PARTY,
   payload: value,
+});
+
+export const toggleEdit = () => ({
+  type: TOGGLE_EDIT,
+});
+
+export const resetEdit = () => ({
+  type: RESET_EDIT,
 });
