@@ -89,7 +89,7 @@ const JoinPartScreen = (props) => {
         status,
       } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        alert("Sorry, we need camera roll permissions to make this work!");
+        alert("Sorry, we need camera roll permissions to add a profile photo!");
         return false;
       }
       return true;
@@ -99,7 +99,7 @@ const JoinPartScreen = (props) => {
   const verifyPermissions = async () => {
     const result = await Permissions.askAsync(Permissions.CAMERA);
     if (result.status !== "granted") {
-      alert("Sorry, we need camera permissions to make this work!");
+      alert("Sorry, we need camera permissions to add a profile photo!");
       return false;
     }
     return true;

@@ -387,7 +387,7 @@ const CreatePartyScreen = (props) => {
         status,
       } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        alert("Sorry, we need camera roll permissions to make this work!");
+        alert("Sorry, we need camera roll permissions to add a profile photo!");
         return false;
       }
       return true;
@@ -397,7 +397,7 @@ const CreatePartyScreen = (props) => {
   const verifyPermissions = async () => {
     const result = await Permissions.askAsync(Permissions.CAMERA);
     if (result.status !== "granted") {
-      alert("Sorry, we need camera permissions to make this work!", [
+      alert("Sorry, we need camera permissions to add a profile photo!", [
         { text: "Okay" },
       ]);
       return false;
@@ -508,14 +508,6 @@ const CreatePartyScreen = (props) => {
               onChangeText={(text) => onChangeText(text)}
             />
 
-            <CustomSwitch isEnabled={isNSFWEnabled} toggleSwitch={toggleNSFW}>
-              NSFW Expansion (SOON)
-            </CustomSwitch>
-
-            <CustomSwitch isEnabled={isGTKEnabled} toggleSwitch={toggleGTK}>
-              Ice breaker Expansion (SOON)
-            </CustomSwitch>
-
             {loadingPhoto ? (
               <Text>Uploading photo to service...</Text>
             ) : (
@@ -534,6 +526,16 @@ const CreatePartyScreen = (props) => {
     </KeyboardAvoidingView>
   );
 };
+
+/*
+<CustomSwitch isEnabled={isNSFWEnabled} toggleSwitch={toggleNSFW}>
+  NSFW Expansion (SOON)
+</CustomSwitch>
+
+<CustomSwitch isEnabled={isGTKEnabled} toggleSwitch={toggleGTK}>
+  Ice breaker Expansion (SOON)
+</CustomSwitch>
+*/
 
 const styles = StyleSheet.create({
   container: {
