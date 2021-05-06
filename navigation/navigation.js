@@ -14,6 +14,7 @@ import LobbyScreen from "../screens/LobbyScreen/LobbyScreen";
 import { useSelector } from "react-redux";
 
 import { selectShowLeaderboard } from "../redux/game-selectors";
+import ModesScreen from "../screens/ModesScreen/ModesScreen";
 
 const Stack = createStackNavigator();
 
@@ -36,6 +37,24 @@ const MainNavigatior = () => {
               style={styles.image}
             >
               <HomeScreen {...props} />
+            </ImageBackground>
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen
+          name="Modes"
+          options={{
+            title: "Who Is Most Likely",
+            headerTransparent: true,
+            headerTintColor: "#fff",
+          }}
+        >
+          {(props) => (
+            <ImageBackground
+              source={require("../assets/background.png")}
+              style={styles.image}
+            >
+              <ModesScreen {...props} />
             </ImageBackground>
           )}
         </Stack.Screen>
@@ -79,7 +98,9 @@ const MainNavigatior = () => {
         <Stack.Screen
           name="Game"
           options={({ route }) => ({
-            title: showLeaderboard ? 'Who Is Most Likely' : `Party Id: ${route.params.partyName}`,
+            title: showLeaderboard
+              ? "Who Is Most Likely"
+              : `Party Id: ${route.params.partyName}`,
             headerTransparent: true,
             headerTintColor: "#fff",
             headerLeft: () => null,

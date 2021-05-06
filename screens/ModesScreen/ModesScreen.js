@@ -4,38 +4,32 @@ import { View, Text, StyleSheet, Linking } from "react-native";
 import CustomButton from "../../components/customButton/customButton";
 
 import { useNavigation } from "@react-navigation/native";
+import ModeButton from "../../components/modeButton/modeButton";
 
-const HomeScreen = (props) => {
+const ModesScreen = (props) => {
   const navigation = useNavigation();
 
-  const onCreateHandler = () => {
-    navigation.navigate("Modes");
+  const onNormalHandler = () => {
+    console.log("Normal Mode");
+    navigation.navigate("Create");
   };
-  const onJoinHandler = () => {
-    navigation.navigate("Join");
+
+  const onAccordingHandler = () => {
+    console.log("According To Mode");
+    navigation.navigate("Create");
   };
+
   return (
     <View style={styles.outerContainer}>
       <View style={styles.container}>
-        <Text style={styles.notificationLabel}>
-          Choose to create a party or join an exsisting one!
-        </Text>
-        <CustomButton onPress={onCreateHandler}>Create</CustomButton>
-        <CustomButton onPress={onJoinHandler}>Join</CustomButton>
+        <Text style={styles.notificationLabel}>Choose a Mode</Text>
+        <ModeButton onPress={onNormalHandler} mode="Normal">
+          According To Mode
+        </ModeButton>
+        <ModeButton onPress={onAccordingHandler} mode="According To">
+          According To Mode
+        </ModeButton>
       </View>
-        <Text style={styles.disclaimerLabel}>
-          If you experience any inconsistiencies or you have
-          ideas to improve the app please contact us at{" "}
-          <Text
-            style={styles.hyperlinkStyle}
-            onPress={() => {
-              Linking.openURL("mailto:whoismostlikely@gmail.com");
-            }}
-          >
-            whoismostlikely@gmail.com
-          </Text>
-          . Enjoy Who Is Most Likely.
-        </Text>
     </View>
   );
 };
@@ -49,7 +43,6 @@ const styles = StyleSheet.create({
   },
   container: {
     width: "100%",
-    height: 200,
     justifyContent: "space-around",
     alignItems: "center",
     marginVertical: 5,
@@ -72,4 +65,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default ModesScreen;
